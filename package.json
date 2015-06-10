@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/sundeepnarang/redis-rpc/issues"
   },
-  "homepage": "https://github.com/sundeepnarang/redis-rpc"
+  "homepage": "https://github.com/sundeepnarang/redis-rpc",
+  "dependencies": {
+    "redis": "^0.12.1"
+  }
 }
