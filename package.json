@@ -1,0 +1,19 @@
+{
+  "name": "redis-rpc",
+  "version": "0.0.0",
+  "description": "A module to write microservices wwith Node.js. Absracts remote procedure call from one node server to other.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sundeepnarang/redis-rpc.git"
+  },
+  "author": "Sundeep Narang <sundeepnrng@gmail.com> (http://sundeepnarang.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sundeepnarang/redis-rpc/issues"
+  },
+  "homepage": "https://github.com/sundeepnarang/redis-rpc"
+}
