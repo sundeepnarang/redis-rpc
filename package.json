@@ -1,7 +1,7 @@
 {
   "name": "redis-rpc",
-  "version": "0.0.1",
-  "description": "A module to write microservices wwith Node.js. Absracts remote procedure call from one node server to other.",
+  "version": "0.0.3",
+  "description": "A module to write microservices with Node.js. Abstracts remote procedure call from one node server to other using redis pub/sub.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

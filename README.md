@@ -110,8 +110,13 @@ It only takes one object argument with following properties.
     args*           : An array of arguments
     argTypes        : An array of argument data types (only supported are ["object","array","date","string","number","null"]). 
     sessionId       : A sessionId which will be automatically added as the last argument to callback on dispatcher.          
+         
+##echo Function
+
+This function will send data from dispatcher to service and console.log it on return.
           
 #To Do  
 
 * Add support for boolean types
 * Add tasks after initialization
+* Add support for echo callback function
