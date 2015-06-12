@@ -51,10 +51,11 @@ function RedisRPC(options){
             var socketId;
             var task;
             var callback;
+            var echo = false;
 
             var argsHash = message.split(that.argSep);
             if((!argsHash)||(!argsHash.length)){
-                return that.subErr(new Error("Error getting arguments"),message,{argsHash : argsHash});
+                return that.subError(new Error("Error getting arguments"),message,{argsHash : argsHash});
             }
 
             for(var i = 0;i<argsHash.length;i++){
@@ -62,7 +63,9 @@ function RedisRPC(options){
                 if((keyVal.length==2)&&(typeof(keyVal[0]) == "string")&&(typeof(keyVal[1]) == "string")) {
                     var key = keyVal[0].trim();
                     var val = keyVal[1].trim();
-                    if(key == "socketId") {
+                    if(key == "echo"){
+                        echo = true;
+                    } else if(key == "socketId") {
                         socketId = val;
                     } else if(key == "task") {
                         task = val;
@@ -78,7 +81,7 @@ function RedisRPC(options){
                                     try {
                                         val = new Date(JSON.parse(val));
                                     } catch(e){
-                                        that.subErr(e,message,{key : key,val : val,keyParts:keyParts });
+                                        that.subError(e,message,{key : key,val : val,keyParts:keyParts });
                                     }
                                     break;
                                 case 'null' :
@@ -89,35 +92,34 @@ function RedisRPC(options){
                                     try {
                                         val = JSON.parse(val);
                                     } catch(e){
-                                        that.subErr(e,message,{key : key,val : val,keyParts:keyParts });
+                                        that.subError(e,message,{key : key,val : val,keyParts:keyParts });
                                     }
                                     break;
                                 case 'undefined' :
                                     val = null;
-                                    that.subErr(new Error("Error undefined argument"),message,{key : key,val : val });
+                                    that.subError(new Error("Error undefined argument"),message,{key : key,val : val });
                                     break;
                                 case 'string' :
                                     break;
                                 default :
-                                    return that.subErr(new Error("Error unknown argument type"),message,{key : key,val : val,keyParts:keyParts });
+                                    return that.subError(new Error("Error unknown argument type"),message,{key : key,val : val,keyParts:keyParts });
                             }
 
                             args[argNum] = val;
                         } else {
-                            //that.subErr("Error in Extra arguments",message,{},{key : key,val : val,keyParts:keyParts });
+                            //that.subError("Error in Extra arguments",message,{},{key : key,val : val,keyParts:keyParts });
                         }
                     } else {
-                        //that.subErr("Error in arguments",message,{},{key : key,val : val,keyParts:keyParts });
+                        //that.subError("Error in arguments",message,{},{key : key,val : val,keyParts:keyParts });
                     }
-                    args[keyVal[0].trim()] = keyVal[1].trim();
                 }
                 else {
-                    return that.subErr(new Error("Error getting arguments"),message,{keyVal : keyVal});
+                    return that.subError(new Error("Error getting arguments"),message,{keyVal : keyVal});
                 }
             }
 
             var done = function(){
-                var message = 'task'+ that.keyValSep + task
+                var message = (echo?'echo' + that.keyValSep + 'echo':'task'+ that.keyValSep + task)
                     + (socketId?that.argSep + 'socketId'+ that.keyValSep + socketId:'');
                 var argsArray = Array.prototype.slice.call(arguments);
                 argsArray.forEach(function(d,i){
@@ -141,15 +143,23 @@ function RedisRPC(options){
 
                 that.pub.publish(that.pubModule,message);
             };
+
             if(that.dispatcher){
+                if(echo){
+                    return console.log(args);
+                }
                 if(socketId) args.push(socketId);
             }else {
+                if(echo){
+                    return done.apply(null,args);
+                }
                 args.push(done);
             }
 
 
+
             if(typeof (that.tasks[task])!=="function"){
-                return that.subErr(new Error("No task found to run"));
+                return that.subError(new Error("No task found to run"));
             }else {
                 callback = that.tasks[task];
             }
@@ -177,11 +187,36 @@ function RedisRPC(options){
             return type;
         }
     };
+
+    this.argToStr = function(a,b) {
+        switch (a) {
+            case "object" :
+            case "date" :
+                b = JSON.stringify(b);
+                break;
+            case "null" :
+                b = '';
+                break;
+            case "undefined" :
+                b = '';
+                break;
+            case  "number" :
+                b = b + '';
+                break;
+        }
+        return b;
+    };
 }
 
 RedisRPC.prototype.sendCall = function(options){
 
-    if((!options.task)||(typeof(options.task)!="string")){
+    var echo = false;
+    if(options.echo){
+        echo = true;
+    }
+
+    if(!(echo)&&((!options.task)||(typeof(options.task)!="string"))){
+        console.log("echo : ",echo);
         return this.pubError(new Error("Task no defined or not string type!"));
     }
 
@@ -197,6 +232,7 @@ RedisRPC.prototype.sendCall = function(options){
                 if(this.argTypes.indexOf(options.argTypes[i])==-1){
                     return this.pubError(new Error("Arguments type " + options.argTypes[i] + " not valid!"));
                 }
+                options.args[i] = this.argToStr(options.argTypes[i],options.args[i]);
             }
         }else {
             return this.pubError(new Error("Argument Types provided not Array of equal length to Arguments"));
@@ -205,6 +241,7 @@ RedisRPC.prototype.sendCall = function(options){
         options.argTypes = [];
         for(i = 0;i<options.args.length;i++){
             options.argTypes[i] = this.getArgType(options.args[i]);
+            options.args[i] = this.argToStr(options.argTypes[i],options.args[i])
         }
     }
     if((options.sessionId)&&(typeof(options.sessionId) != "string")){
@@ -214,7 +251,7 @@ RedisRPC.prototype.sendCall = function(options){
     var args        = options.args;
     var argTypes    = options.argTypes;
     var socketId    = options.sessionId;
-    var message = 'task'+ this.keyValSep + task
+    var message = (echo?'echo' + this.keyValSep + 'echo':'task'+ this.keyValSep + task)
         + (socketId?this.argSep + 'socketId'+ this.keyValSep + socketId:'');
     var that = this;
     args.forEach(function(d,i) {
@@ -222,6 +259,14 @@ RedisRPC.prototype.sendCall = function(options){
     });
 
     this.pub.publish(this.pubModule,message);
+};
+
+RedisRPC.prototype.echo = function () {
+    var args = Array.prototype.slice.call(arguments);
+    this.sendCall({
+       args :args,
+       echo : true
+    });
 };
 
 module.exports = RedisRPC;

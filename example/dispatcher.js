@@ -27,3 +27,5 @@ redisRPC.sendCall({
     task : "Add",
     args : [1, 2]
 });
+
+redisRPC.echo(1,new Date(),"test",{a : 1,b:"test"});

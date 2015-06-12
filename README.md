@@ -1,6 +1,6 @@
 # redis-rpc
 A module to write microservices with Node.js
-Absracts remote procedure call from one node server to other using redis pub/sub.
+Abstracts remote procedure call from one node server to other using redis pub/sub.
 
 #Before You Begin
 
@@ -9,7 +9,7 @@ Absracts remote procedure call from one node server to other using redis pub/sub
 Lets assume you have a application made of two node servers.  
 
 * A dispatcher server which handles users and routes.
-* A service module that performs backend tasks
+* A service module that performs backend tasks.
 
 1. This module will make a call from dispatcher module to service module.
 2. Service module will then perform the task.
