@@ -1,6 +1,6 @@
 {
   "name": "redis-rpc",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "A module to write microservices with Node.js. Abstracts remote procedure call from one node server to other using redis pub/sub.",
   "main": "index.js",
   "scripts": {

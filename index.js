@@ -142,7 +142,7 @@ function RedisRPC(options){
                         }
                     } else if(ArgType=="undefined"){
                         d = '';
-                    } else if(ar)
+                    }
 
                     message = message + that.argSep + 'args&'+ ArgType + '&' + i + that.keyValSep + d;
                 }) ;
