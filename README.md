@@ -2,9 +2,9 @@
 A module to write microservices with Node.js
 Abstracts remote procedure call from one node server to other using redis pub/sub.
 
-#Before You Begin
+# Before You Begin
 
-##What it Does?
+## What it Does?
 
 Lets assume you have a application made of two node servers.  
 
@@ -15,23 +15,23 @@ Lets assume you have a application made of two node servers.
 2. Service module will then perform the task.
 3. Once task is completed service module will send data to the dispatcher module which will then call a callback for that task.
 
-##Pre-requisites
+## Pre-requisites
 
 A redis server should be up and running on the machine.
 
-#Usage
+# Usage
 
-##Install
+## Install
 
     npm install redis-rpc
 
-##Initialiize  
+## Initialiize  
 
     var redis       = require("redis");  
     var redisRPCLib = require("redis-rpc");  
     var redisRPC    = new redisRPCLib(/\*options/\*);   
 
-##Options  
+## Options  
     
     pub         : a redis client to publish data to.(Default : creates a redis client)
     sub         : a redis client to get data from.(Default : creates a redis client)
@@ -45,9 +45,9 @@ A redis server should be up and running on the machine.
     keyValSep   : a string to separate argument's name and value
     
 
-#Example
+# Example
 
-##Assumptions
+## Assumptions
 
 There are 2 node servers running  
 
@@ -56,9 +56,9 @@ There are 2 node servers running
 
 Dispatcher server wants to call a function "Add" on Service Server.
  
-##Code  
+## Code  
     
-###Dispatcher Server 
+### Dispatcher Server 
     var redisRPCLib = require("redis-rpc");
     
     var redisRPC = new redisRPCLib({
@@ -85,7 +85,7 @@ Dispatcher server wants to call a function "Add" on Service Server.
         args : [1, 2]
     });
     
-###Service Server   
+### Service Server   
     var redisRPCLib = require("redis-rpc");
      
     var redisRPC = new redisRPCLib({
@@ -102,7 +102,7 @@ Dispatcher server wants to call a function "Add" on Service Server.
                                         // dispatcher and task results need to be published 
         });
         
-##sendCall Function
+## sendCall Function
          
 It only takes one object argument with following properties.
 
@@ -111,11 +111,11 @@ It only takes one object argument with following properties.
     argTypes        : An array of argument data types (only supported are ["object","array","date","string","number","null"]). 
     sessionId       : A sessionId which will be automatically added as the last argument to callback on dispatcher.          
          
-##echo Function
+## echo Function
 
 This function will send data from dispatcher to service and console.log it on return.
           
-#To Do  
+# To Do  
 
 * Add support for boolean types
 * Add tasks after initialization

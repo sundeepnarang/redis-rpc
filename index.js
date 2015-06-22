@@ -96,11 +96,17 @@ function RedisRPC(options){
                                     }
                                     break;
                                 case 'undefined' :
-                                    val = null;
-                                    that.subError(new Error("Error undefined argument"),message,{key : key,val : val });
+                                    val = undefined;
+                                    //that.subError(new Error("Error undefined argument"),message,{key : key,val : val });
                                     break;
                                 case 'string' :
                                     break;
+                                case 'boolean' :
+                                    if((val==1)||(val=="true")||(val==true)){
+                                        val = true;
+                                    }else{
+                                        val = false;
+                                    }
                                 default :
                                     return that.subError(new Error("Error unknown argument type"),message,{key : key,val : val,keyParts:keyParts });
                             }
@@ -136,7 +142,7 @@ function RedisRPC(options){
                         }
                     } else if(ArgType=="undefined"){
                         d = '';
-                    }
+                    } else if(ar)
 
                     message = message + that.argSep + 'args&'+ ArgType + '&' + i + that.keyValSep + d;
                 }) ;
@@ -167,14 +173,14 @@ function RedisRPC(options){
 
 
         } else {
-            console.log("\nRedis-RPC: Mesage on Undefined Channel\n"
+            console.log("\nRedis-RPC: Message on Undefined Channel\n"
                 + '\nChannel : [' + channel + "]."
                 + '\nMessage : [' + message + "].");
         }
 
     });
 
-    this.argTypes = ["object","array","date","string","number","null"];
+    this.argTypes = ["object","array","date","string","number","null","undefined","boolean"];
 
     this.getArgType = function (a){
         var type = typeof (a);
