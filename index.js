@@ -102,11 +102,8 @@ function RedisRPC(options){
                                 case 'string' :
                                     break;
                                 case 'boolean' :
-                                    if((val==1)||(val=="true")||(val==true)){
-                                        val = true;
-                                    }else{
-                                        val = false;
-                                    }
+                                    val = !!((val == 1) || (val == "true") || (val == true));
+                                    break;
                                 default :
                                     return that.subError(new Error("Error unknown argument type"),message,{key : key,val : val,keyParts:keyParts });
                             }
